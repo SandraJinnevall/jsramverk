@@ -1,17 +1,44 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <div class="comp">
+        <component v-bind:is="component" />
+    </div>
+    <div class="btn">
+        <v-btn
+          elevation="2" 
+          v-on:click="tabHandler"
+        >{{this.button}}</v-btn>
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import StartPage from './components/StartPage.vue'
+import TextEditor from './components/TextEditor.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    StartPage,
+    TextEditor
+    
+  },
+  data () {
+    return {
+      component: StartPage,
+      button: "Try me!" 
+    }
+  },
+  methods: {
+    tabHandler() {
+      if (this.component === StartPage) {
+        this.component = TextEditor;
+        this.button = "Changed my mind, go back!"
+      } else {
+        this.component = StartPage;
+        this.button = "Try me!"
+      }
+    }
   }
 }
 </script>
@@ -23,6 +50,19 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  height: 600px;
 }
+
+.v-btn {
+  margin: 30px;
+}
+
+.comp {
+  height: 80%;
+}
+
+.btn {
+  height: 20%;
+}
+
 </style>

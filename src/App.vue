@@ -50,19 +50,17 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  height: 600px;
-}
-
-.v-btn {
-  margin: 30px;
 }
 
 .comp {
-  height: 80%;
+  display: inline-block;
+  width: 100%;
 }
 
 .btn {
-  height: 20%;
+  margin-top: 10px;
+  display: inline-block;
+  width: 100%;
 }
 
 </style>

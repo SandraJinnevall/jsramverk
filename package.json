@@ -7,11 +7,11 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "deploy": "npm run build && rsync -av --delete dist/ saji19@ssh.student.bth.se:www/editor"
-
   },
   "dependencies": {
     "@tiptap/starter-kit": "^2.0.0-beta.101",
     "@tiptap/vue-2": "^2.0.0-beta.48",
+    "axios": "^0.21.4",
     "core-js": "^3.6.5",
     "dedent": "^0.7.0",
     "vue": "^2.6.11",

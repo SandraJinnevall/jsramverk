@@ -9,12 +9,16 @@
             >
             <v-toolbar>
                 <v-spacer></v-spacer>
-                <v-btn v-on:click="savedData()" icon>
+                <v-btn class="save" v-on:click="savedData()" icon>
                      SAVE
                 </v-btn>
                 <v-spacer></v-spacer>
             </v-toolbar>
                 <div class="texteditor">
+                    <p v-if="this.docid">Current editing document: {{this.docName}}</p>
+                    <p v-if="!this.docid">Create a new document below</p>
+                    <p style="font-style:oblique;">Don't forget to press "SAVE"</p>
+                    <p> Name your document: <input class="docname" type="text" v-model="docName"></p>
                     <vue-editor v-model="content"></vue-editor>
                 </div>
             </v-card>
@@ -23,8 +27,9 @@
 </template>
 
 <script>
-import { VueEditor } from 'vue2-quill-editor'
-
+import { VueEditor } from 'vue2-quill-editor';
+import Vue from 'vue';
+import axios from "axios";
 
 export default {
     components: { 
@@ -32,13 +37,35 @@ export default {
     },
     data: function() {
         return {
-            content: "",
+            docid: this.$currentdoc._id,
+            content: this.$currentdoc.documentText,
+            docName: this.$currentdoc.documentHeading,
         }
     },
     methods: {
         savedData: function() {
             let regex = /(<([^>]+)>)/ig;
             console.log(this.content.replace(regex, ""));
+            console.log(this.docName);
+
+            if (this.$currentdoc._id === "") {
+                //add new doc to database
+                axios.post(`https://jsramverk-editor-saji19.azurewebsites.net/`, {
+                    documentHeading: this.docName,
+                    documentText: this.content.replace(regex, "")
+                });
+            } else {
+                axios.put(`https://jsramverk-editor-saji19.azurewebsites.net/${this.$currentdoc._id}`, {
+                    documentHeading: this.docName,
+                    documentText: this.content.replace(regex, "")
+                });
+                Vue.prototype.$currentdoc._id = "";
+                Vue.prototype.$currentdoc.documentHeading = "";
+                Vue.prototype.$currentdoc.documentText = "";
+                this.docName = "";
+                this.content = "";
+                this.docid = "";
+            }
         }
     }
 }
@@ -53,7 +80,15 @@ export default {
 }
 
 #inspire {
-    max-height: 650px;
+    max-height: 700px;
 }
 
+.docname {
+    border-bottom: 1px solid black;
+    margin: 5px;
+}
+
+.save {
+    background: green;
+}
 </style>

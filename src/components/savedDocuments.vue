@@ -2,11 +2,13 @@
   <div class="saveddocs">
     <h1 class="subtitle has-text-centered">Saved documents:</h1>
     <hr />
+    <p>Want to edit a document? Press "EDIT" on the document you want to change and then click "GO BACK TO TEXTEDITOR!"</p>
     <div class="alldocs">
       <div class="documents" v-for="(item) in items" :key="item._id">
           <v-btn
           style="margin-right:10px; margin-bottom:10px"
           v-on:click="editdoc(item)"
+          v-bind:class="{ active: item._id === selected }"
           >EDIT</v-btn>
           <v-btn
           style="margin-bottom:10px"
@@ -26,7 +28,6 @@
 <script>
 import axios from "axios";
 import Vue from 'vue';
-import App from '../App.vue';
 
 export default {
   name: "App",
@@ -35,6 +36,7 @@ export default {
       items: [],
       documentText: "",
       editeddocumentText: "",
+      selected: ""
     };
   },
   async mounted() {
@@ -44,10 +46,10 @@ export default {
   },
   methods: {
     editdoc(item) {
+      this.selected = item._id;
       Vue.prototype.$currentdoc._id = item._id;
       Vue.prototype.$currentdoc.documentHeading = item.documentHeading;
       Vue.prototype.$currentdoc.documentText = item.documentText;
-      App.methods.tabHandler("change");
     },
     async deletedoc(id) {
       console.log(id)
@@ -66,6 +68,10 @@ export default {
 }
 .icon {
   cursor: pointer;
+}
+
+.active {
+  background-color: green !important;
 }
 
 .alldocs {

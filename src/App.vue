@@ -24,7 +24,6 @@ import TextEditor from './components/TextEditor.vue'
 import SavedDocuments from './components/savedDocuments.vue'
 import Vue from 'vue';
 
-
 export default {
   name: 'App',
   components: {

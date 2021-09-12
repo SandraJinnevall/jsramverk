@@ -18,8 +18,8 @@
                     <p v-if="this.docid">Current editing document: {{this.docName}}</p>
                     <p v-if="!this.docid">Create a new document below</p>
                     <p style="font-style:oblique;">Don't forget to press "SAVE"</p>
-                    <p> Name your document: <input class="docname" type="text" v-model="docName"></p>
-                    <vue-editor v-model="content"></vue-editor>
+                    <p> Name your document: <input class="docname" type="text" v-model="docName" required></p>
+                    <vue-editor v-model="content" required></vue-editor>
                 </div>
             </v-card>
         </v-app>
@@ -49,6 +49,12 @@ export default {
             console.log(this.docName);
 
             if (this.$currentdoc._id === "") {
+                if (this.docName === "") {
+                    this.docName = "Write something..."
+                }
+                if (this.content.replace(regex, "") === "") {
+                    this.content = "write something..."
+                }
                 //add new doc to database
                 axios.post(`https://jsramverk-editor-saji19.azurewebsites.net/`, {
                     documentHeading: this.docName,

@@ -9,7 +9,6 @@ Vue.prototype.$currentdoc = Vue.observable({
   documentHeading: ""
 });
 
-
 new Vue({
   el: '#app',
   vuetify,

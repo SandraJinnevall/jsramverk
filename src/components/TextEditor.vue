@@ -14,6 +14,12 @@
                 </v-btn>
                 <v-spacer></v-spacer>
             </v-toolbar>
+                <v-alert v-if="savesucess" dismissible type="success">
+                    Your document is now saved and can be found on "SE SAVED DOCS!"
+                </v-alert>
+                <v-alert v-if="infoalert" dismissible type="info">
+                    Sorry! The heading and content must be filled in to save a document!
+                </v-alert>
                 <div class="texteditor">
                     <p v-if="this.docid">Current editing document: {{this.docName}}</p>
                     <p v-if="!this.docid">Create a new document below</p>
@@ -40,26 +46,27 @@ export default {
             docid: this.$currentdoc._id,
             content: this.$currentdoc.documentText,
             docName: this.$currentdoc.documentHeading,
+            savesucess: false,
+            infoalert: false
         }
     },
     methods: {
         savedData: function() {
             let regex = /(<([^>]+)>)/ig;
-            console.log(this.content.replace(regex, ""));
-            console.log(this.docName);
 
             if (this.$currentdoc._id === "") {
-                if (this.docName === "") {
-                    this.docName = "Write something..."
+                if (this.docName === "" || this.content.replace(regex, "") === "") {
+                    this.infoalert = true;
+                } else {
+                    this.savesucess = true;
+                    //add new doc to database
+                    axios.post(`https://jsramverk-editor-saji19.azurewebsites.net/`, {
+                        documentHeading: this.docName,
+                        documentText: this.content.replace(regex, "")
+                    });
+                    this.docName = "";
+                    this.content = "";
                 }
-                if (this.content.replace(regex, "") === "") {
-                    this.content = "write something..."
-                }
-                //add new doc to database
-                axios.post(`https://jsramverk-editor-saji19.azurewebsites.net/`, {
-                    documentHeading: this.docName,
-                    documentText: this.content.replace(regex, "")
-                });
             } else {
                 axios.put(`https://jsramverk-editor-saji19.azurewebsites.net/${this.$currentdoc._id}`, {
                     documentHeading: this.docName,

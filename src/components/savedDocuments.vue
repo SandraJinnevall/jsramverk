@@ -1,7 +1,6 @@
 <template>
   <div class="saveddocs">
     <h1 class="subtitle has-text-centered">Saved documents:</h1>
-    <hr />
     <p>Want to edit a document? Press "EDIT" on the document you want to change and then click "GO BACK TO TEXTEDITOR!"</p>
     <div class="alldocs">
       <div class="documents" v-for="(item) in items" :key="item._id">
@@ -22,6 +21,9 @@
           </div>
       </div>
     </div>
+    <v-alert v-if="editalert" dismissible type="info">
+        Press "GO BACK TO TEXTEDITOR!" to edit the chosen document!
+    </v-alert>
   </div>
 </template>
 
@@ -36,7 +38,8 @@ export default {
       items: [],
       documentText: "",
       editeddocumentText: "",
-      selected: ""
+      selected: "",
+      editalert: false
     };
   },
   async mounted() {
@@ -46,6 +49,7 @@ export default {
   },
   methods: {
     editdoc(item) {
+      this.editalert = true;
       this.selected = item._id;
       Vue.prototype.$currentdoc._id = item._id;
       Vue.prototype.$currentdoc.documentHeading = item.documentHeading;
@@ -74,10 +78,16 @@ export default {
   background-color: green !important;
 }
 
+.info {
+  background-color: #2196f3 !important;
+  border-color: #2196f3 !important;
+}
+
 .alldocs {
   display: flex;
   flex-wrap: wrap;
   text-align: center;
+  margin-top: 20px;
 }
 
 .documents {

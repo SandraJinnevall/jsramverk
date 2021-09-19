@@ -10,7 +10,7 @@
           elevation="2" 
           v-on:click="showsaveddocs()"
         >{{this.showbtnname}}</v-btn>
-        <v-btn
+        <v-btn class="firstpagebutton"
           elevation="2" 
           v-on:click="tabHandler(component)"
         >{{this.button}}</v-btn>

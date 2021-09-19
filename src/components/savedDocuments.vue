@@ -5,6 +5,7 @@
     <div class="alldocs">
       <div class="documents" v-for="(item) in items" :key="item._id">
           <v-btn
+          id="edit"
           style="margin-right:10px; margin-bottom:10px"
           v-on:click="editdoc(item)"
           v-bind:class="{ active: item._id === selected }"

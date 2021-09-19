@@ -52,17 +52,16 @@ export default {
     },
     methods: {
         savedData: function() {
-            let regex = /(<([^>]+)>)/ig;
 
             if (this.$currentdoc._id === "") {
-                if (this.docName === "" || this.content.replace(regex, "") === "") {
+                if (this.docName === "" || this.content === "") {
                     this.infoalert = true;
                 } else {
                     this.savesucess = true;
                     //add new doc to database
                     axios.post(`https://jsramverk-editor-saji19.azurewebsites.net/`, {
                         documentHeading: this.docName,
-                        documentText: this.content.replace(regex, "")
+                        documentText: this.content
                     });
                     this.docName = "";
                     this.content = "";
@@ -70,7 +69,7 @@ export default {
             } else {
                 axios.put(`https://jsramverk-editor-saji19.azurewebsites.net/${this.$currentdoc._id}`, {
                     documentHeading: this.docName,
-                    documentText: this.content.replace(regex, "")
+                    documentText: this.content
                 });
                 Vue.prototype.$currentdoc._id = "";
                 Vue.prototype.$currentdoc.documentHeading = "";

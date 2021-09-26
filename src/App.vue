@@ -22,6 +22,7 @@
 import StartPage from './components/StartPage.vue'
 import TextEditor from './components/TextEditor.vue'
 import SavedDocuments from './components/savedDocuments.vue'
+// import BlockGame from './components/BlockGame.vue'
 import Vue from 'vue';
 
 export default {
@@ -29,7 +30,7 @@ export default {
   components: {
     StartPage,
     TextEditor,
-    SavedDocuments  
+    SavedDocuments
   },
   data () {
     console.log(this.$currentdoc);

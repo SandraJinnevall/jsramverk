@@ -4,7 +4,7 @@ import vuetify from './plugins/vuetify'
 
 Vue.config.productionTip = false
 Vue.prototype.$currentdoc = Vue.observable({
-  _id: "",
+  _id: "123",
   documentText: "",
   documentHeading: ""
 });

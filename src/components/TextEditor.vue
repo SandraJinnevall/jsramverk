@@ -24,8 +24,8 @@
                     <p v-if="this.docid">Current editing document: {{this.docName}}</p>
                     <p v-if="!this.docid">Create a new document below</p>
                     <p style="font-style:oblique;">Don't forget to press "SAVE"</p>
-                    <p> Name your document: <input class="docname" type="text" v-model="docName" required></p>
-                    <vue-editor v-model="content" required></vue-editor>
+                    <p> Name your document: <input class="docname" type="text" v-model="docName"></p>
+                    <input type="text" style="width:800px; height:200px; border:1px solid black;" name="name" value="" v-model="content"/>
                 </div>
             </v-card>
         </v-app>
@@ -33,13 +33,14 @@
 </template>
 
 <script>
-import { VueEditor } from 'vue2-quill-editor';
 import Vue from 'vue';
 import axios from "axios";
+import io from "socket.io-client";
+
 
 export default {
     components: { 
-        VueEditor
+        
     },
     data: function() {
         return {
@@ -47,12 +48,36 @@ export default {
             content: this.$currentdoc.documentText,
             docName: this.$currentdoc.documentHeading,
             savesucess: false,
-            infoalert: false
+            infoalert: false,
+            text: "",
+            socket: io(),
+            docData: {}
+        }
+    },
+    created () {
+        this.socket = io("http://localhost:1337");
+        // this.socket = io("https://jsramverk-editor-saji19.azurewebsites.net/");
+    },
+    mounted () { 
+        this.emitDocData(); 
+        this.socket.on("text", (docData) => {
+            console.log(docData);
+            console.log("1", docData);
+            this.docName = docData.docName
+            this.content = docData.content;
+            console.log("2", docData);
+        });
+    },
+    watch: {
+        content: function () {
+            this.emitDocData();
+        },
+        docName: function () {
+            this.emitDocData();
         }
     },
     methods: {
         savedData: function() {
-
             if (this.$currentdoc._id === "") {
                 if (this.docName === "" || this.content === "") {
                     this.infoalert = true;
@@ -78,6 +103,16 @@ export default {
                 this.content = "";
                 this.docid = "";
             }
+        },
+        emitDocData () {
+            this.docData = {
+                _id: this.docid,
+                content: this.content,
+                docName: this.docName
+            }
+            console.log(this.docData.content)
+            this.socket.emit("text", this.docData);
+            this.socket.emit("create", this.docData._id);
         }
     }
 }

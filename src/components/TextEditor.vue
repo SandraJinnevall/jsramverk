@@ -24,8 +24,9 @@
                     <p v-if="this.docid">Current editing document: {{this.docName}}</p>
                     <p v-if="!this.docid">Create a new document below</p>
                     <p style="font-style:oblique;">Don't forget to press "SAVE"</p>
-                    <p> Name your document: <input class="docname" type="text" v-model="docName"></p>
-                    <input type="text" style="width:800px; height:200px; border:1px solid black;" name="name" value="" v-model="content"/>
+                    <p> Name your document: <input class="docname" type="text" v-on:keyup="emitDocData()" v-model="docName"></p>
+                    <!-- <input type="text" style="width:800px; height:200px; border:1px solid black;" name="name" value="" v-model="content"/> -->
+                    <textarea v-on:keyup="emitDocData()" style="width:800px; height:200px; border:1px solid black;" v-model="content"></textarea>
                 </div>
             </v-card>
         </v-app>
@@ -55,8 +56,8 @@ export default {
         }
     },
     created () {
-        this.socket = io("http://localhost:1337");
-        // this.socket = io("https://jsramverk-editor-saji19.azurewebsites.net/");
+        // this.socket = io("http://localhost:1337");
+        this.socket = io("https://jsramverk-editor-saji19.azurewebsites.net/");
     },
     mounted () { 
         this.emitDocData(); 
@@ -69,12 +70,12 @@ export default {
         });
     },
     watch: {
-        content: function () {
-            this.emitDocData();
-        },
-        docName: function () {
-            this.emitDocData();
-        }
+        // content: function () {
+        //     this.emitDocData();
+        // },
+        // docName: function () {
+        //     this.emitDocData();
+        // }
     },
     methods: {
         savedData: function() {

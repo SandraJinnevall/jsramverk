@@ -35,7 +35,7 @@
                           >
                         </p>
                         <v-spacer></v-spacer>
-                        <v-btn v-on:click="loginUser()" color="primary">Login</v-btn>
+                        <v-btn id="login" v-on:click="loginUser()" color="primary">Login</v-btn>
                      </v-card-actions>
                   </v-card>
                </v-flex>

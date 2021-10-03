@@ -47,7 +47,7 @@ export default {
       localStorage.removeItem("jwt");
       Vue.prototype.$currentuserID = "";
       Vue.prototype.$currentuserName = "";
-      this.$router.push("/");
+      this.$router.push("/", ()=>{});
     },
     showDoc() {
       this.$router.push("/savedDocuments", ()=>{});

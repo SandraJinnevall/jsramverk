@@ -10,10 +10,10 @@
           <v-toolbar-title id="title">Documents</v-toolbar-title>
           <v-spacer></v-spacer>
 
-          <v-btn v-on:click="showDoc()" icon>
+          <v-btn id="goHome" v-on:click="goHome()" icon>
             <v-icon v-on:click="goHome()">mdi-file-document-edit-outline</v-icon>
           </v-btn>
-          <v-btn icon @click="logUserOut">
+          <v-btn id="logout" icon @click="logUserOut">
             <v-icon>mdi-logout</v-icon>
           </v-btn>
         </v-toolbar>

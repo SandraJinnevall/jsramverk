@@ -82,12 +82,10 @@ export default {
     for (var i = 0; i < this.items.length; i++) {
         if (this.items[i].userId === Vue.prototype.$currentuserID) {
               console.log(this.items[i].documentText)
-              // this.items[i].documentText = this.items[i].d.replace(/['"]+/g, '')ocumentText
               this.mydoc.push(this.items[i]);
         }
         for (var j = 0; j < this.items.length; j++) {
            if (this.items[i].sharedWith[j] === Vue.prototype.$currentuserID) {
-              // this.items[i].documentText = this.items[i].documentText.replace(/['"]+/g, '')
               this.shareddoc.push(this.items[i]);
            }
         }

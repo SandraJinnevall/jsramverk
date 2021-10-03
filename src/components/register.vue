@@ -67,7 +67,7 @@ export default {
   methods: {
     async registerUser() {
        try {
-        let response = await axios.post("http://localhost:1337/user/register", this.register);
+        let response = await axios.post("https://jsramverk-editor-saji19.azurewebsites.net/user/register", this.register);
         let token = response.data.token;
         if (token) {
           localStorage.setItem("jwt", token);

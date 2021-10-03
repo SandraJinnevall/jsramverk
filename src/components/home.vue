@@ -10,7 +10,7 @@
           <v-toolbar-title id="title">WELCOME {{ user.name }}</v-toolbar-title>
           <v-spacer></v-spacer>
 
-          <v-btn icon>
+          <v-btn icon v-on:click="showDoc()">
             <v-icon v-on:click="showDoc()">mdi-file-document-multiple-outline</v-icon>
           </v-btn>
           <v-btn icon @click="logUserOut">
@@ -50,7 +50,7 @@ export default {
       this.$router.push("/");
     },
     showDoc() {
-      this.$router.push("/savedDocuments");
+      this.$router.push("/savedDocuments", ()=>{});
     }
   },
   created() {

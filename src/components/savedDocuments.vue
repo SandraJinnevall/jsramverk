@@ -10,7 +10,7 @@
           <v-toolbar-title id="title">Documents</v-toolbar-title>
           <v-spacer></v-spacer>
 
-          <v-btn icon>
+          <v-btn v-on:click="showDoc()" icon>
             <v-icon v-on:click="goHome()">mdi-file-document-edit-outline</v-icon>
           </v-btn>
           <v-btn icon @click="logUserOut">
@@ -108,10 +108,10 @@ export default {
       Vue.prototype.$currentdoc.sharedWith = item.sharedWith;
       Vue.prototype.$currentdoc.userId = item.userId;
       Vue.prototype.$currentdoc.ownerName = item.ownerName;
-      this.$router.push("/home");
+      this.$router.push("/home", ()=>{});
     },
     goHome() {
-        this.$router.push("/home");
+        this.$router.push("/home", ()=>{});
     },
     logUserOut() {
       localStorage.removeItem("jwt");

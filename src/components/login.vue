@@ -59,7 +59,7 @@ export default {
   methods: {
     async loginUser() {
       try {
-        let response = await axios.post("http://localhost:1337/user/login", this.login);
+        let response = await axios.post("https://jsramverk-editor-saji19.azurewebsites.net/user/login", this.login);
         console.log(response)
         let token = response.data.token;
         if (token) {

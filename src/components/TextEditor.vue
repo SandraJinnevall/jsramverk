@@ -52,8 +52,8 @@ export default {
         }
     },
     created () {
-        this.socket = io("http://localhost:1337");
-        // this.socket = io("https://jsramverk-editor-saji19.azurewebsites.net/");
+        // this.socket = io("http://localhost:1337");
+        this.socket = io("https://jsramverk-editor-saji19.azurewebsites.net/");
     },
     async mounted () { 
         console.log("vem?", this.ownerName);
@@ -67,7 +67,7 @@ export default {
         });
         if (Vue.prototype.$currentuserID === Vue.prototype.$currentdoc.userId || this.docid === "") {
             this.owner = true;
-            const response = await axios.get("http://localhost:1337/user/getAllUsers");
+            const response = await axios.get("https://jsramverk-editor-saji19.azurewebsites.net/user/getAllUsers");
             console.log(response.data.allUsers);
             var allusersdata = response.data.allUsers;
             for (let i = 0; i < allusersdata.length; i++) {

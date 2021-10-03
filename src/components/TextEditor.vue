@@ -11,7 +11,12 @@
             <p v-if="this.docid">Current editing document: {{this.docName}}</p>
             <p v-if="!this.docid">Create a new document below</p>
             <p> Name your document: <input class="docname" type="text" v-on:keyup="emitDocData()" v-model="docName"></p>
-            <textarea id="textarea" v-on:keyup="emitDocData()" style="width:800px; height:200px; border:1px solid black;" v-model="content"></textarea>
+            <!-- <textarea id="textarea" v-on:keyup="emitDocData()" style="width:800px; height:200px; border:1px solid black;" v-model="content"></textarea> -->
+            <div v-on:keyup="emitDocData()">
+                <quill-editor
+                        v-model="content"
+                    />
+            </div>
             <p v-if="owner === true">Share this document with: </p>
             <p v-if="owner === false">Only the owner [{{this.ownerName}}] can share this document</p>
             <div v-for="user in allusers" :key="user._id">
@@ -29,10 +34,18 @@ import axios from "axios";
 import io from "socket.io-client";
 // import { VueEditor } from "vue2-editor";
 
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+
+import { quillEditor } from 'vue-quill-editor'
+
+
 
 export default {
     components: { 
-        // VueEditor
+        // VueEditor,
+        quillEditor
     },
     data: function() {
         return {
@@ -48,7 +61,10 @@ export default {
             userName: Vue.prototype.$currentuserName,
             sharedWith: this.$currentdoc.sharedWith,
             allusers: [],
-            owner: false
+            owner: false,
+            editorOption: {
+            // Some Quill options...
+            }
         }
     },
     created () {
@@ -123,6 +139,7 @@ export default {
             }
         },
         emitDocData () {
+            console.log(this.content)
             this.docData = {
                 _id: this.docid,
                 content: this.content,
@@ -130,7 +147,17 @@ export default {
             }
             this.socket.emit("text", this.docData);
             this.socket.emit("create", this.docData._id);
-        }
+        },
+        // onEditorChange({html}) {
+        //     console.log('editor change!', html)
+        //     this.docData = {
+        //         _id: this.docid,
+        //         content: this.content,
+        //         docName: this.docName
+        //     }
+        //     this.socket.emit("text", this.docData);
+        //     this.socket.emit("create", this.docData._id);
+        // }
     }
 }
 </script>

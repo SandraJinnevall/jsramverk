@@ -1,31 +1,70 @@
 <template>
-  <div class="saveddocs">
-    <h1 class="subtitle has-text-centered">Saved documents:</h1>
-    <p>Want to edit a document? Press "EDIT" on the document you want to change and then click "GO BACK TO TEXTEDITOR!"</p>
-    <div class="alldocs">
-      <div class="documents" v-for="(item) in items" :key="item._id">
-          <v-btn
-          id="edit"
-          style="margin-right:10px; margin-bottom:10px"
-          v-on:click="editdoc(item)"
-          v-bind:class="{ active: item._id === selected }"
-          >EDIT</v-btn>
-          <v-btn
-          style="margin-bottom:10px"
-          v-on:click="deletedoc(item._id)"
-          >DELETE</v-btn>
-          <div class="docHeading">
-              {{ item.documentHeading }}
-          </div>
-          <div class="docText">
-              {{ item.documentText }}
-          </div>
-      </div>
-    </div>
-    <v-alert v-if="editalert" dismissible type="info">
-        Press "GO BACK TO TEXTEDITOR!" to edit the chosen document!
-    </v-alert>
-  </div>
+  <v-app id="inspire">
+      <v-card
+        color="#F6F0E0"
+        flat
+        height="1000px"
+        tile
+      >
+        <v-toolbar extended color="white">
+          <v-toolbar-title id="title">Documents</v-toolbar-title>
+          <v-spacer></v-spacer>
+
+          <v-btn icon>
+            <v-icon v-on:click="goHome()">mdi-file-document-edit-outline</v-icon>
+          </v-btn>
+          <v-btn icon @click="logUserOut">
+            <v-icon>mdi-logout</v-icon>
+          </v-btn>
+        </v-toolbar>
+        <section>
+            <div class="saveddocs">
+              <h1 class="subtitle has-text-centered">My documents:</h1>
+              <div class="alldocs">
+                <div class="documents" v-for="(item) in mydoc" :key="item._id">
+                    <v-btn
+                    id="edit"
+                    style="margin-right:10px; margin-bottom:10px"
+                    v-on:click="editdoc(item)"
+                    v-bind:class="{ active: item._id === selected }"
+                    >EDIT</v-btn>
+                    <v-btn
+                    style="margin-bottom:10px"
+                    v-on:click="deletedoc(item._id)"
+                    >DELETE</v-btn>
+                    <div class="docHeading">
+                        {{ item.documentHeading }}
+                    </div>
+                    <div class="docText">
+                        {{ item.documentText }}
+                    </div>
+                </div>
+              </div>
+              <h1 class="subtitle has-text-centered">Shared documents:</h1>
+              <div class="alldocs">
+                <div class="documents" v-for="(item) in shareddoc" :key="item._id">
+                    <v-btn
+                    id="edit"
+                    style="margin-right:10px; margin-bottom:10px"
+                    v-on:click="editdoc(item)"
+                    v-bind:class="{ active: item._id === selected }"
+                    >EDIT</v-btn>
+                    <v-btn
+                    style="margin-bottom:10px"
+                    v-on:click="deletedoc(item._id)"
+                    >DELETE</v-btn>
+                    <div class="docHeading">
+                        {{ item.documentHeading }}
+                    </div>
+                    <div class="docText">
+                        {{ item.documentText }}
+                    </div>
+                </div>
+              </div>
+            </div>
+          </section>
+      </v-card>
+    </v-app>
 </template>
 
 <script>
@@ -34,9 +73,11 @@ import Vue from 'vue';
 
 export default {
   name: "App",
-  data() {
+  data: function() {
     return {
       items: [],
+      mydoc: [],
+      shareddoc: [],
       documentText: "",
       editeddocumentText: "",
       selected: "",
@@ -45,8 +86,17 @@ export default {
   },
   async mounted() {
     const response = await axios.get("https://jsramverk-editor-saji19.azurewebsites.net/");
-    console.log(response.data.editorDocuments);
     this.items = response.data.editorDocuments;
+    for (var i = 0; i < this.items.length; i++) {
+        if (this.items[i].userId === Vue.prototype.$currentuserID) {
+              this.mydoc.push(this.items[i]);
+        }
+        for (var j = 0; j < this.items.length; j++) {
+           if (this.items[i].sharedWith[j] === Vue.prototype.$currentuserID) {
+              this.shareddoc.push(this.items[i]);
+           }
+        }
+    }
   },
   methods: {
     editdoc(item) {
@@ -55,6 +105,19 @@ export default {
       Vue.prototype.$currentdoc._id = item._id;
       Vue.prototype.$currentdoc.documentHeading = item.documentHeading;
       Vue.prototype.$currentdoc.documentText = item.documentText;
+      Vue.prototype.$currentdoc.sharedWith = item.sharedWith;
+      Vue.prototype.$currentdoc.userId = item.userId;
+      Vue.prototype.$currentdoc.ownerName = item.ownerName;
+      this.$router.push("/home");
+    },
+    goHome() {
+        this.$router.push("/home");
+    },
+    logUserOut() {
+      localStorage.removeItem("jwt");
+      Vue.prototype.$currentuserID = "";
+      Vue.prototype.$currentuserName = "";
+      this.$router.push("/");
     },
     async deletedoc(id) {
       console.log(id)
@@ -98,7 +161,6 @@ export default {
     padding: 10px;
     margin: 10px;
     /* flex: 20%; */
-    width: 20%;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;

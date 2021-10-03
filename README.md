@@ -1,5 +1,5 @@
 # my-project
-
+[![Build Status](https://app.travis-ci.com/SandraJinnevall/jsramverk.svg?branch=main)](https://app.travis-ci.com/SandraJinnevall/jsramverk)
 ## Project setup
 ```
 npm install

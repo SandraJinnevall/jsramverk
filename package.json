@@ -11,15 +11,23 @@
     "deploy": "npm run build && rsync -av --delete dist/ saji19@ssh.student.bth.se:www/editor"
   },
   "dependencies": {
+    "@mdi/js": "^6.1.95",
     "@morioh/v-quill-editor": "^1.0.2",
     "@tiptap/starter-kit": "^2.0.0-beta.101",
     "@tiptap/vue-2": "^2.0.0-beta.48",
     "axios": "^0.21.4",
+    "bootstrap": "^5.1.1",
     "core-js": "^3.6.5",
     "dedent": "^0.7.0",
+    "material-design-icons-iconfont": "^6.1.0",
     "socket.io-client": "^4.2.0",
+    "sweetalert": "^2.1.2",
+    "sweetalert2": "^11.1.7",
     "vue": "^2.6.11",
+    "vue-jwt-decode": "^0.1.0",
+    "vue-router": "^3.5.2",
     "vue-socket.io": "^3.0.10",
+    "vue2-editor": "^2.10.3",
     "vuetify": "^2.4.0"
   },
   "devDependencies": {

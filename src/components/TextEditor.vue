@@ -23,7 +23,6 @@
                 <input type="checkbox" :id="user._id" :value="user._id" v-model="sharedWith">
                 <label :for="user._id">{{user.name}}</label>
             </div>
-            <!-- <vue-editor v-model="content"></vue-editor> -->
         </div>
     </div>
 </template>
@@ -32,7 +31,6 @@
 import Vue from 'vue';
 import axios from "axios";
 import io from "socket.io-client";
-// import { VueEditor } from "vue2-editor";
 
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
@@ -44,7 +42,6 @@ import { quillEditor } from 'vue-quill-editor'
 
 export default {
     components: { 
-        // VueEditor,
         quillEditor
     },
     data: function() {
@@ -72,36 +69,39 @@ export default {
         this.socket = io("https://jsramverk-editor-saji19.azurewebsites.net/");
     },
     async mounted () { 
-        console.log("vem?", this.ownerName);
         this.emitDocData(); 
         this.socket.on("text", (docData) => {
-            console.log(docData);
-            console.log("1", docData);
             this.docName = docData.docName
             this.content = docData.content;
-            console.log("2", docData);
         });
         if (Vue.prototype.$currentuserID === Vue.prototype.$currentdoc.userId || this.docid === "") {
             this.owner = true;
-            const response = await axios.get("https://jsramverk-editor-saji19.azurewebsites.net/user/getAllUsers");
-            console.log(response.data.allUsers);
-            var allusersdata = response.data.allUsers;
+            try {
+                var result = await axios({
+                    method: "POST",
+                    url: "http://localhost:1337/graphql",
+                    data: {
+                        query: `
+                            {
+                                allUsers {
+                                    name,
+                                    _id
+                                }
+                            }
+                        `
+                    }
+                });
+                console.log(result)
+            } catch (error) {
+                console.error(error);
+            }
+            var allusersdata = result.data.data.allUsers;
             for (let i = 0; i < allusersdata.length; i++) {
-                console.log(allusersdata[i]._id)
-                console.log(Vue.prototype.$currentuserID)
                 if (allusersdata[i]._id !== Vue.prototype.$currentuserID) {
                     this.allusers.push(allusersdata[i])
                 }
             }
         }
-    },
-    watch: {
-        // content: function () {
-        //     this.emitDocData();
-        // },
-        // docName: function () {
-        //     this.emitDocData();
-        // }
     },
     methods: {
         savedData: function() {
@@ -147,17 +147,7 @@ export default {
             }
             this.socket.emit("text", this.docData);
             this.socket.emit("create", this.docData._id);
-        },
-        // onEditorChange({html}) {
-        //     console.log('editor change!', html)
-        //     this.docData = {
-        //         _id: this.docid,
-        //         content: this.content,
-        //         docName: this.docName
-        //     }
-        //     this.socket.emit("text", this.docData);
-        //     this.socket.emit("create", this.docData._id);
-        // }
+        }
     }
 }
 </script>

@@ -8,6 +8,13 @@
         </v-alert>
         <div class="texteditor">
             <v-icon v-on:click="savedData()">mdi-content-save</v-icon>
+            <v-icon v-if="owner === true" v-on:click="getallUsers()">mdi-share</v-icon>
+            <div v-if="share === true">
+                <div v-for="user in allusersArray" :key="user._id">
+                    <input type="checkbox" :id="user._id" :value="user._id" v-model="sharedWith">
+                    <label :for="user._id">{{user.name}}</label>
+                </div>
+            </div>
             <p v-if="this.docid">Current editing document: {{this.docName}}</p>
             <p v-if="!this.docid">Create a new document below</p>
             <p> Name your document: <input class="docname" type="text" v-on:keyup="emitDocData()" v-model="docName"></p>
@@ -17,12 +24,7 @@
                         v-model="content"
                     />
             </div>
-            <p v-if="owner === true">Share this document with: </p>
             <p v-if="owner === false">Only the owner [{{this.ownerName}}] can share this document</p>
-            <div v-for="user in allusers" :key="user._id">
-                <input type="checkbox" :id="user._id" :value="user._id" v-model="sharedWith">
-                <label :for="user._id">{{user.name}}</label>
-            </div>
         </div>
     </div>
 </template>
@@ -46,19 +48,20 @@ export default {
     },
     data: function() {
         return {
-            docid: this.$currentdoc._id,
-            content: this.$currentdoc.documentText,
-            docName: this.$currentdoc.documentHeading,
-            ownerName: this.$currentdoc.ownerName,
+            docid: Vue.prototype.$currentdoc._id,
+            content: Vue.prototype.$currentdoc.documentText,
+            docName: Vue.prototype.$currentdoc.documentHeading,
+            ownerName: Vue.prototype.$currentdoc.ownerName,
             savesucess: false,
             infoalert: false,
             socket: io(),
             docData: {},
             userID: Vue.prototype.$currentuserID,
             userName: Vue.prototype.$currentuserName,
-            sharedWith: this.$currentdoc.sharedWith,
-            allusers: [],
+            sharedWith: Vue.prototype.$currentdoc.sharedWith,
+            allusersArray: [],
             owner: false,
+            share: false,
             editorOption: {
             // Some Quill options...
             }
@@ -75,32 +78,7 @@ export default {
             this.content = docData.content;
         });
         if (Vue.prototype.$currentuserID === Vue.prototype.$currentdoc.userId || this.docid === "") {
-            this.owner = true;
-            try {
-                var result = await axios({
-                    method: "POST",
-                    url: "http://localhost:1337/graphql",
-                    data: {
-                        query: `
-                            {
-                                allUsers {
-                                    name,
-                                    _id
-                                }
-                            }
-                        `
-                    }
-                });
-                console.log(result)
-            } catch (error) {
-                console.error(error);
-            }
-            var allusersdata = result.data.data.allUsers;
-            for (let i = 0; i < allusersdata.length; i++) {
-                if (allusersdata[i]._id !== Vue.prototype.$currentuserID) {
-                    this.allusers.push(allusersdata[i])
-                }
-            }
+                this.owner = true;
         }
     },
     methods: {
@@ -147,6 +125,31 @@ export default {
             }
             this.socket.emit("text", this.docData);
             this.socket.emit("create", this.docData._id);
+        },
+        async getallUsers () {
+            this.share = true;
+            this.allusersArray = [];
+            const result = await axios.post(
+                'https://jsramverk-editor-saji19.azurewebsites.net/graphql', {
+                query: `
+                        {
+                            allUsers {
+                                name,
+                                _id
+                            }
+                        }
+                    `
+            })
+            var allusersdata = result.data.data.allUsers;
+            if (allusersdata === null) {
+                this.getallUsers()
+            } else {
+                for (let i = 0; i < allusersdata.length; i++) {
+                    if (allusersdata[i]._id !== Vue.prototype.$currentuserID) {
+                        this.allusersArray.push(allusersdata[i])
+                    }
+                }  
+            } 
         }
     }
 }

@@ -113,10 +113,10 @@ export default {
       this.$router.push("/");
     },
     async deletedoc(id) {
-      console.log(id)
       await axios.delete(`https://jsramverk-editor-saji19.azurewebsites.net/${id}`);
-      const response = await axios.get("https://jsramverk-editor-saji19.azurewebsites.net/");
-      this.items = response.data.editorDocuments;
+      // const response = await axios.get("https://jsramverk-editor-saji19.azurewebsites.net/");
+      // this.items = response.data.editorDocuments;
+      this.$router.push("/home", ()=>{});
     }
   }
 };

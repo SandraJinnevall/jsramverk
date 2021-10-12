@@ -9,6 +9,7 @@
         <div class="texteditor">
             <v-icon v-on:click="savedData()">mdi-content-save</v-icon>
             <v-icon v-if="owner === true" v-on:click="getallUsers()">mdi-share</v-icon>
+            <v-icon v-on:click="downloadPDF()">mdi-file-pdf-box</v-icon>
             <div v-if="share === true">
                 <div v-for="user in allusersArray" :key="user._id">
                     <input type="checkbox" :id="user._id" :value="user._id" v-model="sharedWith">
@@ -83,6 +84,7 @@ export default {
     },
     methods: {
         savedData: function() {
+            this.share = false;
             if (this.$currentdoc._id === "") {
                 if (this.docName === "" || this.content === "") {
                     this.infoalert = true;
@@ -150,6 +152,29 @@ export default {
                     }
                 }  
             } 
+        },
+        async downloadPDF () {
+            var title = this.docName;
+
+            await axios({
+                    url: `http://localhost:1337/generatePDF/`,
+                    data: {
+                       documentText: this.content
+                    },
+                    method: 'POST',
+                    responseType: 'blob',
+                })
+                .then(function (response) {
+                        const url = window.URL.createObjectURL(new Blob([response.data]));
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.setAttribute('download', title+'.pdf');
+                        document.body.appendChild(link);
+                        link.click();
+                })
+                .catch(function (error) {
+                    console.log(error)
+            });
         }
     }
 }

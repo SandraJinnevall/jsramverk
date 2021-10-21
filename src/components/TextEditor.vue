@@ -1,48 +1,67 @@
 <template>
-    <div>      
-        <v-alert v-if="savesucess" dismissible type="success">
-            Your document is now saved and can be found on "SE SAVED DOCS!"
-        </v-alert>
-        <v-alert v-if="infoalert" dismissible type="info">
-            Sorry! The heading and content must be filled in to save a document!
-        </v-alert>
+    <div style="display: inline-flex; width: 100%; backgroundColor: #F8F9FA;">      
         <div class="texteditor">
-            <v-icon v-on:click="savedData()">mdi-content-save</v-icon>
-            <v-icon v-if="owner === true" v-on:click="getallUsers()">mdi-share</v-icon>
-            <v-icon id="pdf" v-on:click="downloadPDF()">mdi-file-pdf-box</v-icon>
-            <v-icon v-on:click="comment()">mdi-comment</v-icon>
-            <div v-if="share === true">
-                <div v-for="user in allusersArray" :key="user._id">
-                    <input type="checkbox" :id="user._id" :value="user._id" v-model="sharedWith">
-                    <label :for="user._id">{{user.name}}</label>
-                </div>
+            <div class="toolbar" style="display: inline-flex; width: 100%; ">
+                <p style="margin-right:50%;"><v-icon style="color: #5C84F1;">mdi-file-document</v-icon> <input class="docname" type="text" v-on:keyup="emitDocData()" v-model="docName"></p>
+
+                <v-icon style="color: #333;" v-on:click="savedData()">mdi-content-save</v-icon>
+                <v-icon style="color: #333;" id="pdf" v-on:click="downloadPDF()">mdi-file-pdf-box</v-icon>
+                <v-icon style="color: #333;" v-on:click="comment()">mdi-comment</v-icon>
+                <v-icon style="color: #333;" v-on:click="getallUsers(), dialog = true">mdi-share</v-icon>
+                <v-row justify="center">
+                    <v-dialog v-model="dialog" scrollable max-width="200px">
+                        <v-card>
+                            <v-card-title>Share with</v-card-title>
+                            <v-divider></v-divider>
+                            <v-card-text style="height: 300px;">
+                                <div v-if="owner === true">
+                                    <div v-for="user in allusersArray" :key="user._id">
+                                        <input style="margin-right:4px;" type="checkbox" :id="user._id" :value="user._id" v-model="sharedWith">
+                                        <label :for="user._id">{{user.name}}</label>
+                                    </div>
+                                </div>
+                                <p v-if="owner === false">Only the owner [{{ownerName}}] can share this document</p>
+                            </v-card-text>
+                            <v-divider></v-divider>
+                            <v-card-actions>
+                                <v-btn
+                                color="blue darken-1"
+                                text
+                                @click="dialog = false, sharedWith = []"
+                                >
+                                Close
+                                </v-btn>
+                                <v-btn
+                                color="blue darken-1"
+                                text
+                                @click="dialog = false"
+                                v-if="owner === true"
+                                >
+                                Save
+                                </v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
+                </v-row>
             </div>
-            <p v-if="this.docid">Current editing document: {{this.docName}}</p>
-            <p v-if="!this.docid">Create a new document below</p>
-            <p> Name your document: <input class="docname" type="text" v-on:keyup="emitDocData()" v-model="docName"></p>
-            <!-- <textarea id="textarea" v-on:keyup="emitDocData()" style="width:800px; height:200px; border:1px solid black;" v-model="content"></textarea> -->
-            <div id="canvas" v-on:keyup="emitDocData()">
-                <quill-editor
-                        v-model="content"
-                    />
-            </div>
-            <p v-if="owner === false">Only the owner [{{this.ownerName}}] can share this document</p>
-            <div style="display: inline-flex; margin-top:15px;" v-on:click="showComments()">
-                <p>Show Comments</p>
-                <v-icon v-if="showC === false" style="width:10px; height:10px; margin-top:7px; margin-left:10px; font-size: 20px;">mdi-menu-up</v-icon>
-                <v-icon v-if="showC === true" style="width:10px; height:10px; margin-top:7px; margin-left:10px; font-size: 20px;">mdi-menu-down</v-icon>
-            </div>
-            <div v-if="showC === true">
-                <p v-if="docComments.length === 0" style="font-style: oblique; margin-left:10px;">- There is no comments</p>
-                <div class="commets" v-for="(item) in docComments" :key="item._id">
-                    <div style="display: inline-flex; margin-top:15px;">
-                        <v-icon style="width:10px; height:10px; margin-top:7px; margin-right:10px; font-size: 20px;" v-on:click="deleteComment(item._id)">mdi-delete</v-icon>
-                        <div style="width:10px; height:10px; margin-top:7px; margin-right:10px" :style="{ 'background-color': item.color }"></div>
-                        <p v-on:click="highlightComment(item)">{{item.comment}}</p>
-                    </div>
-                </div>
+            <div v-on:keyup="emitDocData()">
+                <quill-editor style="backgroundColor: white;" v-model="content"/>
             </div>
         </div>
+        <v-expansion-panels style="width: 26%; height: 40px; padding-top: 132px; margin-right: 5%;">
+            <v-expansion-panel v-on:click="showComments()">
+                <v-expansion-panel-header>Comments</v-expansion-panel-header>
+                <v-expansion-panel-content v-if="showC === true">
+                    <div class="commets" v-for="(item) in docComments" :key="item._id">
+                        <div style="display: inline-flex; margin-top:15px;">
+                            <v-icon style="width:10px; height:10px; margin-top:7px; margin-right:10px; font-size: 20px;" v-on:click="deleteComment(item._id)">mdi-delete</v-icon>
+                            <div style="width:10px; height:10px; margin-top:7px; margin-right:10px" :style="{ 'background-color': item.color }"></div>
+                            <p v-on:click="highlightComment(item)">{{item.comment}}</p>
+                        </div>
+                    </div>
+                </v-expansion-panel-content>
+            </v-expansion-panel>
+        </v-expansion-panels>
     </div>
 </template>
 
@@ -71,8 +90,6 @@ export default {
             content: Vue.prototype.$currentdoc.documentText,
             docName: Vue.prototype.$currentdoc.documentHeading,
             ownerName: Vue.prototype.$currentdoc.ownerName,
-            savesucess: false,
-            infoalert: false,
             socket: io(),
             docData: {},
             userID: Vue.prototype.$currentuserID,
@@ -81,14 +98,12 @@ export default {
             allusersArray: [],
             owner: false,
             share: false,
-            counter: 0,
-            currentComment: "",
             docComments: [],
-            showC: false
+            showC: false,
+            dialog: false
         }
     },
     created () {
-        // this.socket = io("http://localhost:1337");
         this.socket = io("https://jsramverk-editor-saji19.azurewebsites.net/");
     },
     async mounted () { 
@@ -107,26 +122,24 @@ export default {
             this.showC = false;
             if (this.$currentdoc._id === "") {
                 if (this.docName === "" || this.content === "") {
-                    this.infoalert = true;
+                    this.$alert("Sorry! The heading and content must be filled in to save a document!")
                 } else {
-                    this.savesucess = true;
                     axios.post(`https://jsramverk-editor-saji19.azurewebsites.net/`, {
                         documentHeading: this.docName,
                         documentText: this.content,
                         userId: this.userID,
                         sharedWith: this.sharedWith,
-                        ownerName: this.userName
+                        ownerName: Vue.prototype.$currentuserName
                     });
                     this.docName = "";
                     this.content = "";
                     this.sharedWith = [];
                     this.owner = true;
+                    this.$alert("Your document is now saved and can be found in your archive")
                 }
             } else {
                 axios.put(`https://jsramverk-editor-saji19.azurewebsites.net/${this.$currentdoc._id}`, {
-                    documentHeading: this.docName,
-                    documentText: this.content,
-                    sharedWith: this.sharedWith
+                    documentText: this.content
                 });
                 Vue.prototype.$currentdoc._id = "";
                 Vue.prototype.$currentdoc.documentHeading = "";
@@ -136,6 +149,7 @@ export default {
                 this.content = "";
                 this.docid = "";
                 this.sharedWith = [];
+                this.owner = true;
             }
         },
         emitDocData () {
@@ -177,6 +191,7 @@ export default {
             var title = this.docName;
             await axios({
                     url: `https://jsramverk-editor-saji19.azurewebsites.net/generatePDF/`,
+                    // url: `http://localhost:1337/generatePDF/`,
                     data: {
                        documentText: this.content
                     },
@@ -196,16 +211,18 @@ export default {
                     console.log(error)
             });
         },
-        comment () {
+        async comment () {
             if (this.$currentdoc._id === "") {
                 this.$alert("You need to save the document before commenting");
                 return
             }
-            var colors = ["red", "blue", "orange", "pink", "blue"];
-            var currcolor = colors[this.counter];
-            if (this.counter === colors.length) {
-                this.counter = 0;
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
             }
+            var currcolor = color;
+            console.log(currcolor);
             if (window.getSelection().toString() === "") {
                 this.$alert("You need to select the text you want to comment")
             } else {
@@ -215,7 +232,6 @@ export default {
                 var startM = sel.getRangeAt(0).cloneRange().startOffset;
                 var endM = sel.getRangeAt(0).cloneRange().endOffset;
                 span.style.backgroundColor = currcolor;
-                this.counter += 1;
 
                 var text = window.prompt("Write a comment");            
                 if (text !== "" || this.$currentdoc._id !== "") {
@@ -225,13 +241,16 @@ export default {
                         sel.removeAllRanges();
                         sel.addRange(range);
                     }
-                    axios.post(`http://localhost:1337/comments/`, {
+                    await axios.post(`https://jsramverk-editor-saji19.azurewebsites.net/comments/`, {
                         color: currcolor,
                         start: startM,
                         end: endM,
                         markedText: markedtext,
                         comment: text,
                         documentID: this.$currentdoc._id
+                    });
+                    await axios.put(`https://jsramverk-editor-saji19.azurewebsites.net/${this.$currentdoc._id}`, {
+                        documentText: this.content
                     });
                 } else {
                     if (text === "") {
@@ -243,13 +262,13 @@ export default {
         },
         async deleteComment (id) {
             this.showC = false;
-            await axios.delete(`http://localhost:1337/comments/${id}`);
+            await axios.delete(`https://jsramverk-editor-saji19.azurewebsites.net/comments/${id}`);
         },
         async showComments () {
             this.showC = true;
             this.docComments = [];
             if (Vue.prototype.$currentdoc._id) {
-                const response = await axios.get("http://localhost:1337/comments/");
+                const response = await axios.get("https://jsramverk-editor-saji19.azurewebsites.net/comments/");
                 const allcomments = response.data.comments;
                 for (var i = 0; i < allcomments.length; i++) {
                     if (allcomments[i].documentID === Vue.prototype.$currentdoc._id) {

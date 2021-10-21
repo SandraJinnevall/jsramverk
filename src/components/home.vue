@@ -1,20 +1,20 @@
 <template>
   <v-app id="inspire">
       <v-card
-        color="#F6F0E0"
+        color="#F8F9FA"
         flat
         height="1000px"
         tile
       >
-        <v-toolbar extended color="white">
-          <v-toolbar-title id="title">WELCOME {{ user.name }}</v-toolbar-title>
+        <v-toolbar color="#5C84F1">
+          <v-toolbar-title style="color: white;" id="title">WELCOME {{ this.userName }}</v-toolbar-title>
           <v-spacer></v-spacer>
 
           <v-btn icon v-on:click="showDoc()">
-            <v-icon v-on:click="showDoc()">mdi-file-document-multiple-outline</v-icon>
+            <v-icon style="color: white;" v-on:click="showDoc()">mdi-file-document-multiple-outline</v-icon>
           </v-btn>
           <v-btn icon @click="logUserOut">
-            <v-icon>mdi-logout</v-icon>
+            <v-icon style="color: white;">mdi-logout</v-icon>
           </v-btn>
         </v-toolbar>
             <section>
@@ -40,6 +40,7 @@ export default {
   data: function() {
     return {
       user: {},
+      userName: ""
     };
   },
   methods: {
@@ -57,7 +58,12 @@ export default {
       let token = localStorage.getItem("jwt");
       let decoded = VueJwtDecode.decode(token);
       this.user = decoded;
+
+      var uri = this.user.name;
+      var dec = decodeURIComponent(escape(uri));
       Vue.prototype.$currentuserID = this.user._id;
+      Vue.prototype.$currentuserName = dec;
+      this.userName = Vue.prototype.$currentuserName;
   }
 };
 </script>

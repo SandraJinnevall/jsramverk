@@ -14,7 +14,8 @@ Vue.prototype.$currentdoc = Vue.observable({
   documentHeading: "",
   userId: "",
   sharedWith: [],
-  ownerName: ""
+  ownerName: "",
+  sharedownerName: ""
 });
 
 

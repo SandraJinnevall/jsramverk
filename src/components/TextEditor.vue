@@ -199,7 +199,6 @@ export default {
                     responseType: 'blob',
                 })
                 .then(function (response) {
-                        console.log("vad?", response)
                         const url = window.URL.createObjectURL(new Blob([response.data]));
                         const link = document.createElement('a');
                         link.href = url;
@@ -216,13 +215,14 @@ export default {
                 this.$alert("You need to save the document before commenting");
                 return
             }
+            //Set color
             var letters = '0123456789ABCDEF';
             var color = '#';
             for (var i = 0; i < 6; i++) {
                 color += letters[Math.floor(Math.random() * 16)];
             }
             var currcolor = color;
-            console.log(currcolor);
+            //if a string is not selected then... else..
             if (window.getSelection().toString() === "") {
                 this.$alert("You need to select the text you want to comment")
             } else {
@@ -233,7 +233,12 @@ export default {
                 var endM = sel.getRangeAt(0).cloneRange().endOffset;
                 span.style.backgroundColor = currcolor;
 
-                var text = window.prompt("Write a comment");            
+                var text = window.prompt("Write a comment");     
+                //if the comment text is empty
+                if (text === "") {
+                    this.$alert("Your comment needs a text")
+                    return
+                }       
                 if (text !== "" || this.$currentdoc._id !== "") {
                     if (sel.rangeCount) {
                         var range = sel.getRangeAt(0).cloneRange();
@@ -253,9 +258,6 @@ export default {
                         documentText: this.content
                     });
                 } else {
-                    if (text === "") {
-                        this.$alert("Your comment needs a text")
-                    }
                     return
                 }
             }
